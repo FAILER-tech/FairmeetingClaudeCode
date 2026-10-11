@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Codecall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main id="lobby" class="lobby">
+  <header class="brand">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="2" y="5" width="15" height="12" rx="3" fill="var(--accent)"/><rect x="11" y="11" width="15" height="12" rx="3" fill="none" stroke="var(--text)" stroke-width="2"/></svg>
+    <span>Codecall</span>
+  </header>
+
+  <section class="lobby-grid">
+    <div class="intro">
+      <h1>Pick a code. Share it. Talk.</h1>
+      <p class="lead">Video calls for small groups, right in the browser. Camera, microphone, screen sharing and chat. No account and nothing to install.</p>
+      <ul class="facts">
+        <li>Up to 8 people per room</li>
+        <li>Video and voice go straight between browsers</li>
+        <li>A room disappears when the last person leaves</li>
+      </ul>
+    </div>
+
+    <form id="joinForm" class="card" autocomplete="off">
+      <div class="field">
+        <label for="name">Your name</label>
+        <input id="name" name="name" type="text" maxlength="30" placeholder="Priya" autocomplete="nickname">
+      </div>
+
+      <div class="field">
+        <label for="code">Room code</label>
+        <div class="code-row">
+          <input id="code" name="code" type="text" maxlength="40" placeholder="maple-river-k4x9" spellcheck="false" autocapitalize="off" required>
+          <button type="button" id="newCode" class="secondary">New code</button>
+        </div>
+        <p class="hint">Anyone with the code can join, so share it only with the people you want on the call.</p>
+      </div>
+
+      <fieldset class="checks">
+        <legend>When I join</legend>
+        <label class="check"><input type="checkbox" id="startCam" checked> Turn my camera on</label>
+        <label class="check"><input type="checkbox" id="startMic" checked> Turn my microphone on</label>
+      </fieldset>
+
+      <p id="lobbyError" class="error" role="alert" hidden></p>
+      <button type="submit" id="joinBtn" class="primary">Join call</button>
+    </form>
+  </section>
+</main>
+
+<div id="call" class="call" hidden>
+  <header class="topbar">
+    <div class="room">
+      <span class="tag">Room</span>
+      <code id="roomLabel"></code>
+      <button type="button" id="copyLink" class="chip">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+        <span id="copyLabel">Copy invite link</span>
+      </button>
+    </div>
+    <div class="meta">
+      <span id="count">1 in call</span>
+      <span id="timer" class="mono">00:00</span>
+    </div>
+  </header>
+
+  <div class="body">
+    <section id="grid" class="grid" aria-label="Participants"></section>
+
+    <aside id="chat" class="chat" aria-label="Chat" hidden>
+      <div class="chat-head">
+        <h2>Chat</h2>
+        <button type="button" id="chatClose" class="icon-btn" aria-label="Close chat">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <ul id="messages" class="messages" aria-live="polite"></ul>
+      <form id="chatForm" class="chat-form" autocomplete="off">
+        <input id="chatInput" type="text" maxlength="2000" placeholder="Message everyone" aria-label="Message">
+        <button type="submit" class="icon-btn send" aria-label="Send message">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+        </button>
+      </form>
+    </aside>
+  </div>
+
+  <footer class="controls">
+    <button type="button" id="micBtn" class="ctl" data-off="true" aria-pressed="false" aria-label="Unmute microphone" title="Microphone (M)">
+      <svg class="ico icon-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>
+      <svg class="ico icon-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M9 9v3a3 3 0 0 0 5.1 2.1M15 9.3V6a3 3 0 0 0-5.7-1.3"/><path d="M19 11a7 7 0 0 1-1.1 3.8M5 11a7 7 0 0 0 11 5.7M12 18v3"/></svg>
+    </button>
+
+    <button type="button" id="camBtn" class="ctl" data-off="true" aria-pressed="false" aria-label="Turn camera on" title="Camera (V)">
+      <svg class="ico icon-on" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="13" height="12" rx="2"/><path d="M15 10l6-3v10l-6-3z"/></svg>
+      <svg class="ico icon-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M7 6H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1M15 9.5V8a2 2 0 0 0-2-2H9"/><path d="M15 10l6-3v10l-3.5-1.7"/></svg>
+    </button>
+
+    <button type="button" id="shareBtn" class="ctl share" aria-pressed="false" aria-label="Share your screen" title="Share screen">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4M12 13V8m0 0l-2.5 2.5M12 8l2.5 2.5"/></svg>
+    </button>
+
+    <button type="button" id="chatBtn" class="ctl" aria-expanded="false" aria-label="Open chat" title="Chat (C)">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+      <span id="badge" class="badge" hidden>0</span>
+    </button>
+
+    <button type="button" id="leaveBtn" class="ctl leave" aria-label="Leave call" title="Leave call">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14c5-5 13-5 18 0l-2.2 2.6-3.3-1.4v-2.7a9 9 0 0 0-7 0v2.7l-3.3 1.4z"/></svg>
+    </button>
+  </footer>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<div id="lost" class="lost" hidden>
+  <div class="lost-card">
+    <h2>You were disconnected</h2>
+    <p>The connection to the call dropped. Rejoin to carry on.</p>
+    <button type="button" id="rejoinBtn" class="primary">Rejoin</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "codecall",
+  "version": "1.0.0",
+  "description": "Small-group video calls by room code: camera, mic, screen share and chat in the browser.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
